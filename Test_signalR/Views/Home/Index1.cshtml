@@ -1,0 +1,43 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Real date-time</title>
+</head>
+<body>
+    <div class="row">
+        <div class="col-12">
+            <ul id="serverDate"></ul>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <script>
+        var connection = new signalR.HubConnectionBuilder().withUrl("/gettime").build();
+
+        connection.on("DisplayTime", function (time) {
+            var li = document.createElement("li");
+            li.textContent = time;
+            document.getElementById("serverDate").appendChild(li);
+        });
+
+        connection.start().then(function () {
+
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        setInterval(function () {
+
+            connection.invoke("PrintTime").catch(function (err) {
+                return console.error(err.toString());
+            });
+
+        }, 1000);
+    </script>
+</body>
+</html>
